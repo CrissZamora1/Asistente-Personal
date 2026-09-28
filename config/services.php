@@ -34,5 +34,9 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'ntfy' => [
+        'url' => env('NTFY_URL', 'https://ntfy.sh'),
+        'topic' => env('NTFY_TOPIC'),
+    ],
 
 ];
