@@ -4,8 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CommandLogResource\Pages;
 use App\Models\CommandLog;
+use App\Services\CommandRunner;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -31,16 +33,6 @@ class CommandLogResource extends Resource
 
             Forms\Components\TextInput::make('working_directory')
                 ->label('Carpeta de trabajo'),
-
-            Forms\Components\Select::make('risk_level')
-                ->label('Nivel de riesgo')
-                ->options([
-                    'bajo' => 'Bajo',
-                    'medio' => 'Medio',
-                    'alto' => 'Alto',
-                ])
-                ->default('bajo')
-                ->required(),
         ]);
     }
 
@@ -109,7 +101,17 @@ class CommandLogResource extends Resource
                     ->modalHeading('Confirmar ejecución')
                     ->modalDescription(fn(CommandLog $record) => "Se va a correr: {$record->command}")
                     ->action(function (CommandLog $record) {
-                        app(\App\Services\CommandRunner::class)->ejecutar($record);
+                        try {
+                            app(CommandRunner::class)->ejecutar($record);
+                        } catch (\Throwable $e) {
+                            $record->registrarResultado(1, $e->getMessage());
+
+                            Notification::make()
+                                ->title('No se pudo ejecutar')
+                                ->body($e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
                     }),
 
                 Tables\Actions\Action::make('rechazar')
@@ -129,7 +131,6 @@ class CommandLogResource extends Resource
         return [
             'index' => Pages\ListCommandLogs::route('/'),
             'create' => Pages\CreateCommandLog::route('/create'),
-            'edit' => Pages\EditCommandLog::route('/{record}/edit'),
         ];
     }
 }
