@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('reminders:check')->everyMinute();
+Schedule::command('events:check')->everyMinute();
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
