@@ -6,9 +6,9 @@ use Illuminate\Support\Facades\Http;
 
 class NtfyNotifier
 {
-    public function enviar(string $mensaje, string $titulo = null, string $prioridad = 'urgent', array $opciones = []): bool
+    public function enviar(string $mensaje, ?string $titulo = null, string $prioridad = 'urgent', array $opciones = []): bool
     {
-        $url = config('services.ntfy.url') . '/' . config('services.ntfy.topic');
+        $url = rtrim(config('services.ntfy.url'), '/') . '/' . config('services.ntfy.topic');
 
         $headers = array_merge([
             'Priority' => $prioridad,

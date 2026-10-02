@@ -19,12 +19,14 @@ return [
         'D:\\proyectos',
     ],
 
-    // Si el comando contiene alguna de estas palabras, se marca riesgo ALTO
-    // y exige doble confirmación (aprobar + ejecutar por separado).
+    // Si el comando contiene alguna de estas palabras, se marca riesgo ALTO.
     'palabras_riesgo_alto' => [
         'rm ',
         'del ',
+        'erase ',
+        'rd /s',
         'rmdir',
+        'remove-item',
         'DROP',
         'drop table',
         'migrate:fresh',
@@ -35,6 +37,17 @@ return [
         'format',
         'shutdown',
         'taskkill',
+    ],
+
+    // Patrones que se rechazan siempre: permiten ejecutar código arbitrario
+    // aunque el primer token esté en la lista blanca.
+    'patrones_prohibidos' => [
+        'php -r',
+        'python -c',
+        'docker run',
+        'docker exec',
+        'git -c',
+        'git config',
     ],
 
 ];

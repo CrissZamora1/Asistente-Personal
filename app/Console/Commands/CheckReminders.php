@@ -13,24 +13,23 @@ class CheckReminders extends Command
 
     public function handle(NtfyNotifier $notifier): void
     {
-        $pendientes = Reminder::where('remind_at', '<=', now())
-            ->where(function ($q) {
-                $q->whereNull('last_notified_at')
-                    ->orWhereColumn('last_notified_at', '<', 'remind_at');
-            })
-            ->get();
+        $pendientes = Reminder::pendientesDeNotificar()->get();
 
         foreach ($pendientes as $reminder) {
-            $notifier->enviar(
+            $enviado = $notifier->enviar(
                 mensaje: $reminder->note ?? $reminder->title,
                 titulo: $reminder->title,
                 prioridad: $reminder->is_critical ? 'urgent' : 'high'
             );
 
-            $reminder->update(['last_notified_at' => now()]);
+            // Solo se marca como notificado si ntfy realmente respondió bien;
+            // si falló, se reintenta en el siguiente minuto.
+            if ($enviado) {
+                $reminder->update(['last_notified_at' => now()]);
+            }
 
             // Si es recurrente, aquí después calculamos el siguiente remind_at
-            // usando recurrence_rule. Por ahora, si no es recurrente, queda así.
+            // usando recurrence_rule.
         }
 
         $this->info("Recordatorios procesados: {$pendientes->count()}");

@@ -26,6 +26,9 @@ class Reminder extends Model
     public function scopePendientesDeNotificar($query)
     {
         return $query->where('remind_at', '<=', now())
-            ->whereNull('last_notified_at');
+            ->where(function ($q) {
+                $q->whereNull('last_notified_at')
+                    ->orWhereColumn('last_notified_at', '<', 'remind_at');
+            });
     }
 }
