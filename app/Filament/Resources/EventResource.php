@@ -49,6 +49,21 @@ class EventResource extends Resource
                 ->native(false)
                 ->visible(fn(Forms\Get $get) => ! $get('all_day')),
 
+            Forms\Components\Select::make('remind_minutes_before')
+                ->label('Avisar')
+                ->options([
+                    0 => 'No avisar',
+                    5 => '5 minutos antes',
+                    10 => '10 minutos antes',
+                    30 => '30 minutos antes',
+                    60 => '1 hora antes',
+                    120 => '2 horas antes',
+                    1440 => '1 día antes',
+                ])
+                ->default(30)
+                ->required()
+                ->helperText('Los eventos de todo el día avisan a las 8:00 de ese día.'),
+
             Forms\Components\ColorPicker::make('color')
                 ->label('Color'),
         ]);
