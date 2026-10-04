@@ -4,7 +4,7 @@ use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
 
-Schedule::command('reminders:check')->everyMinute();
+Schedule::command('reminders:check')->everyTenSeconds();
 Schedule::command('events:check')->everyMinute();
 
 Artisan::command('inspire', function () {
